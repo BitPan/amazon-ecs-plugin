@@ -89,6 +89,11 @@ public class ECSComputer extends AbstractCloudComputer {
         if( node != null ) {
             LOGGER.log(Level.INFO, "Terminating the node for computer: {0}", this);
             try {
+                // when a job exits too quick it could cause Jenkins unable to remove
+                // the node. Looks like when a new JNLP connection initializes, Jenkins
+                // need to take a couple of seconds to save the node configurations. Hence
+                // to get around with this issue we wait for 5s before terminating node.
+                Thread.sleep(5000);
                 node.terminate();
             } catch (InterruptedException e) {
                 LOGGER.log(Level.WARNING, "Failed to terminate computer: " + getName(), e);
@@ -98,5 +103,6 @@ public class ECSComputer extends AbstractCloudComputer {
         } else {
             LOGGER.log(Level.WARNING, "There is no node for computer: {0}", this);
         }
+
     }
 }
